@@ -24,12 +24,6 @@ class User {
         return json_decode($json, true);
     }
 
-// Save all users in the JSON
-    public function saveAll($users) {
-        $json = json_encode($users, JSON_PRETTY_PRINT);
-        file_put_contents($this->filePath, $json);
-    }
-
 // Find a user by username to validate 
     public function findByUsername($username) {
         $users = $this->all();
@@ -62,6 +56,11 @@ class User {
         $this->saveAll($users);
 
         return $newUser;
+    }
+// Save all users in the JSON
+    public function saveAll($users) {
+        $json = json_encode($users, JSON_PRETTY_PRINT);
+        file_put_contents($this->filePath, $json);
     }
 
     private function getNextId() {

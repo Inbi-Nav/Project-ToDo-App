@@ -4,61 +4,57 @@ require_once __DIR__ . '/../models/User.php';
 
 class UserController extends ApplicationController
 {
-    // GET /users
-    public function indexAction()
+
+// register
+    public function registerAction()
     {
-        // 1. Obtener todos los usuarios usando el Modelo
-        $users = User::all();
-        
-        $this->data['users'] = $users;
-        $this->data['title'] = 'Lista de Usuarios';
-        
-        // 3. Renderizar la vista
-        $this->render('users/index', $this->data);
-    }
+        // GET request → show register form
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $this->render('users/register');
+            return;
+        }
+        // POST -> read data
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        $errors = [];
+        if (empty($username)) {
+            $errors[] ='El nomnre de usuario es requerido';
+        }
     
-    // GET /login
+        if (empty($password)) {
+            $errors[] ='La contraseña de usuario es requerido';
+        }
+        // Check existing users
+        $userModel = new User();
+        $existingUser = $userModel->findByUsername($username);
+
+        if($existingUser) {
+            $errors[] = 'El usuario ya existe';
+        }
+        // if the errors exist show the register view again
+        if(!empty($errors)) {
+            $this->render('users/register', ["errors" => $errors]);
+            return;
+        }
+        // create a new user
+        $userModel->create($username, $password);
+
+        // redirect to login
+        header("Location: /login");
+        exit();
+
+    }
+
+// Login
     public function loginAction()
-    {
-    }
+{
+    
+}
 
-    // GET /register
-    public function createAction()
-    {
-    }
 
-    // POST /register
-    public function storeAction()
-    {
-    }
-
-    // POST /login
-    public function authenticateAction()
-    {
-    }
-
-    // GET /logout
-    public function logoutAction()
-    {
-    }
-
-    // GET /users/:id
-    public function showAction($id)
-    {
-    }
-
-    // GET /users/:id/edit
-    public function editAction($id)
-    {
-    }
-
-    // POST /users/:id/update
-    public function updateAction($id)
-    {
-    }
-
-    // POST /users/:id/delete
-    public function deleteAction($id)
+// logout
+    public function logoutAction($id)
     {
     }
 }
