@@ -8,9 +8,9 @@ class UserController extends ApplicationController
 // register
     public function registerAction()
     {
-        // GET request → show register form
+        // GET request which shows register form
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $this->render('users/register');
+            $this->render('user/register');
             return;
         }
         // POST -> read data
@@ -34,7 +34,7 @@ class UserController extends ApplicationController
         }
         // if the errors exist show the register view again
         if(!empty($errors)) {
-            $this->render('users/register', ["errors" => $errors]);
+            $this->render('user/register', ["errors" => $errors]);
             return;
         }
         // create a new user
@@ -108,19 +108,20 @@ class UserController extends ApplicationController
     {
 
     // start session
-    if (session_status() === PHP_SESSION_NONE) {
+     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
+
 
     // unset the session 
     $_SESSION = [];
 
-    if (ini_get("sessioon.use_cookies")) {
+    if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
         setcookie(
             session_name(),
             '',
-            time() - 4200,
+            time() - 42000,
             $params["path"],
             $params["domain"],
             $params["secure"],
@@ -130,7 +131,7 @@ class UserController extends ApplicationController
 
     // destry session
     session_destroy();
-    
+
     // redirect to /login 
     header("Location: /tasks");
     exit();

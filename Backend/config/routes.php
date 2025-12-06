@@ -1,7 +1,9 @@
 <?php
 
 return [
-    '/users'    => 'user#index',
+    '/register' => 'user#register',
     '/login'    => 'user#login',
-    '/register' => 'user#create',
+    '/logout'   => 'user#logout'
 ];
+
+?>
