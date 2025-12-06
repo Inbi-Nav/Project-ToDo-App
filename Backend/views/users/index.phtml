@@ -1,0 +1,15 @@
+<h1><?=  $title ?> </h1>
+
+<ul>
+    <?php foreach ($users as $user): ?>
+        <l1> <?=  $user['username'] ?> <br>
+        <strong>ID:</strong> <?= $user['id'] ?><br>
+        <strong>Username:</strong> <?= $user['username'] ?><br>
+        <strong>Role:</strong> <?= $user['role'] ?><br>
+        <strong>Created At:</strong> <?= $user['created_at'] ?>
+        <hr>
+    
+    </li>
+
+    <?php endforeach; ?>
+</ul>
