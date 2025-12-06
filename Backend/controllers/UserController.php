@@ -19,18 +19,18 @@ class UserController extends ApplicationController
 
         $errors = [];
         if (empty($username)) {
-            $errors[] ='El nomnre de usuario es requerido';
+            $errors[] ='Username is required';
         }
     
         if (empty($password)) {
-            $errors[] ='La contraseña de usuario es requerido';
+            $errors[] ='Password is required';
         }
         // Check existing users
         $userModel = new User();
         $existingUser = $userModel->findByUsername($username);
 
         if($existingUser) {
-            $errors[] = 'El usuario ya existe';
+            $errors[] = 'User already exists';
         }
         // if the errors exist show the register view again
         if(!empty($errors)) {
@@ -49,12 +49,70 @@ class UserController extends ApplicationController
 // Login
     public function loginAction()
 {
-    
+    // 1. GET request → show login form
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $this->render('user/login');
+        return;
+    }
+
+      // POST -> read data
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    $errors = [];
+
+    // 3. Validate input
+    if (empty($username)) {
+        $errors[] = "Username is required";
+    }
+
+    if (empty($password)) {
+        $errors[] = "Password is required";
+    }
+
+    if (!empty($errors)) {
+        $this->render('user/login', ["errors" => $errors]);
+        return;
+    }
+
+    // 4. Check if user exists
+    $userModel = new User();
+    $user = $userModel->findByUsername($username);
+
+    if (!$user) {
+        $errors[] = "User not exist";
+        $this->render('user/login', ["errors" => $errors]);
+        return;
+    }
+
+    // verify the password
+    if (!password_verify($password, $user['password'])) {
+        $errors[] = "Incorrect ";
+        $this->render('user/login', ["errors" => $errors]);
+        return;
+    }
+
+    // sttart the session
+    $_SESSION["user_id"] = $user["id"];
+    $_SESSION["username"] = $user["username"];
+    $_SESSION["role"] = $user["role"];
+
+    // rRedirect user back to login
+    header("Location: /tasks");
+    exit();
 }
 
 
 // logout
-    public function logoutAction($id)
+    public function logoutAction()
     {
-    }
+
+    // start session
+
+    // unset the session 
+
+    // destry session
+
+    // redirect to /login 
+    
 }
