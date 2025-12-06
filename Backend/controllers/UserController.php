@@ -108,11 +108,31 @@ class UserController extends ApplicationController
     {
 
     // start session
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
     // unset the session 
+    $_SESSION = [];
+
+    if (ini_get("sessioon.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 4200,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
+        );
+    }
 
     // destry session
-
-    // redirect to /login 
+    session_destroy();
     
+    // redirect to /login 
+    header("Location: /tasks");
+    exit();
+    }
 }
