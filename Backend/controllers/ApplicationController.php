@@ -17,4 +17,13 @@ class ApplicationController extends Controller
 
         include $file;
     }
+
+    protected function json($data, $status = 200)
+    {
+        http_response_code($status);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
+    }
+
 }

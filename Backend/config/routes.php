@@ -1,10 +1,14 @@
 <?php
 
 return [
-    '/users' => 'user#index',
-    '/register' => 'user#register',
-    '/login'    => 'user#login',
-    '/logout'   => 'user#logout'
+    // User CRUD
+    '/users'        => 'user#index',
+    '/users/show'   => 'user#show',
+    '/users/create' => 'user#create',
+    '/users/update' => 'user#update',
+    '/users/delete' => 'user#delete',
+
 ];
+
 
 ?>
