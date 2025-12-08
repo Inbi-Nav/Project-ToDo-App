@@ -133,4 +133,45 @@ class UserController extends ApplicationController
             "success" => true, "message" => "User deleted correctly"]);
     }
 
+    //register
+
+    public function registerAction()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $this->render('user/register');
+        return;
+    }
+
+    $username = $_POST['username'] ?? null;
+    $password = $_POST['password'] ?? null;
+
+    $errors = [];
+
+    if (empty($username)) {
+        $errors[] = 'Username is required';
+    }
+
+    if (empty($password)) {
+        $errors[] = 'Password is required';
+    }
+
+    $userModel = new User();
+    $existingUser = $userModel->findByUsername($username);
+
+    if ($existingUser) {
+        $errors[] = 'User already exists';
+    }
+
+    if (!empty($errors)) {
+        $this->render('user/register', ["errors" => $errors]);
+        return;
+    }
+
+    $userModel->createUser($username, $password);
+
+    header("Location: /login");
+    exit();
+}
+
+
 }

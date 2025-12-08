@@ -7,6 +7,8 @@ return [
     '/users/create' => 'user#create',
     '/users/update' => 'user#update',
     '/users/delete' => 'user#delete',
+    '/register' => 'user#register',
+
 
 ];
 
