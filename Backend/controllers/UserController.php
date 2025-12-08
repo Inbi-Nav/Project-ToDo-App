@@ -136,42 +136,96 @@ class UserController extends ApplicationController
     //register
 
     public function registerAction()
-{
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $this->render('user/register');
-        return;
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $this->render('user/register');
+            return;
+        }
+
+        $username = $_POST['username'] ?? null;
+        $password = $_POST['password'] ?? null;
+
+        $errors = [];
+
+        if (empty($username)) {
+            $errors[] = 'Username is required';
+        }
+
+        if (empty($password)) {
+            $errors[] = 'Password is required';
+        }
+
+        $userModel = new User();
+        $existingUser = $userModel->findByUsername($username);
+
+        if ($existingUser) {
+            $errors[] = 'User already exists';
+        }
+
+        if (!empty($errors)) {
+            $this->render('user/register', ["errors" => $errors]);
+            return;
+        }
+
+        $userModel->createUser($username, $password);
+
+        header("Location: /login");
+        exit();
+    }
+    
+    public function loginAction()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $this->render('user/login');
+            return;
+        }
+
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        $errors = [];
+
+        if (empty($username)) {
+            $errors[] = "Username is required";
+        }
+
+        if (empty($password)) {
+            $errors[] = "Password is required";
+        }
+
+        if (!empty($errors)) {
+            $this->render('user/login', ["errors" => $errors]);
+            return;
+        }
+
+        $userModel = new User();
+        $user = $userModel->findByUsername($username);
+
+        if (!$user) {
+            $errors[] = "User does not exist";
+            $this->render('user/login', ["errors" => $errors]);
+            return;
+        }
+
+        if (!password_verify($password, $user['password'])) {
+            $errors[] = "Incorrect password";
+            $this->render('user/login', ["errors" => $errors]);
+            return;
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $_SESSION["user_id"] = $user["id"];
+        $_SESSION["username"] = $user["username"];
+
+        header("Location: /tasks");
+        exit();
     }
 
-    $username = $_POST['username'] ?? null;
-    $password = $_POST['password'] ?? null;
 
-    $errors = [];
 
-    if (empty($username)) {
-        $errors[] = 'Username is required';
-    }
-
-    if (empty($password)) {
-        $errors[] = 'Password is required';
-    }
-
-    $userModel = new User();
-    $existingUser = $userModel->findByUsername($username);
-
-    if ($existingUser) {
-        $errors[] = 'User already exists';
-    }
-
-    if (!empty($errors)) {
-        $this->render('user/register', ["errors" => $errors]);
-        return;
-    }
-
-    $userModel->createUser($username, $password);
-
-    header("Location: /login");
-    exit();
-}
 
 
 }
