@@ -5,7 +5,6 @@ class User {
     private $id;
     private $username;
     private $password;
-    private $role;
     private $created_at;
 
     private $filePath;
@@ -24,21 +23,20 @@ class User {
         return json_decode($json, true);
     }
 
-// Find a user by username to validate 
-    public function findByUsername($username) {
+// return user that have same id  
+    public function findById($id) {
         $users = $this->all();
 
-        foreach ($users as $user) {
-            if ($user['username'] === $username) {
-                return $user; 
+        foreach($users as $user) {
+            if ($user['id'] == $id) {
+                return $user;
             }
         }
-
-        return null; 
+        return null;
     }
 
 // create a new user 
-    public function create($username, $password, $role = "user") {
+    public function createUser($username, $password) {
         $users = $this->all();
         
         $newId = $this->getNextId();
@@ -47,7 +45,6 @@ class User {
             "id" => $newId,
             "username" => $username,
             "password" => password_hash($password, PASSWORD_DEFAULT),
-            "role" => $role,
             "created_at" => date("Y-m-d H:i:s")
         ];
 
@@ -56,11 +53,6 @@ class User {
         $this->saveAll($users);
 
         return $newUser;
-    }
-// Save all users in the JSON
-    public function saveAll($users) {
-        $json = json_encode($users, JSON_PRETTY_PRINT);
-        file_put_contents($this->filePath, $json);
     }
 
     private function getNextId() {
@@ -74,5 +66,49 @@ class User {
         $lastId = (int)$lastUser['id'];
 
         return $lastId + 1;
+    }
+// update User 
+    public function updateUser($id, $data) {
+        $users = $this->all();
+
+        foreach ($users as $key => $user) {
+            if ($user['id'] == $id) {
+
+                if(isset($data['username'])) {
+                    $users[$key]['username'] = $data['username'];
+                }
+
+                if(isset($data['password'])) {
+                    $users[$key]['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+                }
+                $this->saveAll($users);
+                return $users[$key];
+            }
+        }
+        return null;
+    }
+
+    public function deleteUser($id) {
+        $users = $this->all();
+
+        foreach ($users as $key => $user) {
+            if ($user['id'] == $id) {
+
+                unset($users[$key]);
+
+                $users = array_values($users);
+
+                $this->saveAll($users);
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+     public function saveAll($users) {
+    $json = json_encode($users, JSON_PRETTY_PRINT);
+    file_put_contents($this->filePath, $json);
     }
 }
