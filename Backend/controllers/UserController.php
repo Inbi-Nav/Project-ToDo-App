@@ -5,135 +5,132 @@ require_once __DIR__ . '/../models/User.php';
 class UserController extends ApplicationController
 {
 
-// register
-    public function registerAction()
-    {
-        // GET request which shows register form
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $this->render('user/register');
-            return;
-        }
-        // POST -> read data
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-
-        $errors = [];
-        if (empty($username)) {
-            $errors[] ='Username is required';
-        }
-    
-        if (empty($password)) {
-            $errors[] ='Password is required';
-        }
-        // Check existing users
+    public function indexAction() {
         $userModel = new User();
-        $existingUser = $userModel->findByUsername($username);
+        $users = $userModel->all();
 
-        if($existingUser) {
-            $errors[] = 'User already exists';
-        }
-        // if the errors exist show the register view again
-        if(!empty($errors)) {
-            $this->render('user/register', ["errors" => $errors]);
-            return;
-        }
-        // create a new user
-        $userModel->create($username, $password);
+        $this->json(["success" => true,"data" => $users ]);
 
-        // redirect to login
-        header("Location: /login");
         exit();
-
     }
 
-// Login
-    public function loginAction()
-{
-    // 1. GET request → show login form
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $this->render('user/login');
-        return;
+    public function showAction() {
+        $id = $_GET["id"] ?? null;
+
+       if (!$id) {
+        return $this->json([ "success"=> false, "error"=> "No ID found"]);
+       } 
+
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            return $this->json([ "success"=> false, "error" => "User not found :(" ]);
+        }
+        return $this->json(["success" => true, "data" => $user]);
     }
 
-      // POST -> read data
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    public function createAction() {
 
-    $errors = [];
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
-    // 3. Validate input
-    if (empty($username)) {
-        $errors[] = "Username is required";
-    }
+            return $this->json(["success" => false, "error" => "Method not allowed"]);
+        }
 
-    if (empty($password)) {
-        $errors[] = "Password is required";
-    }
-
-    if (!empty($errors)) {
-        $this->render('user/login', ["errors" => $errors]);
-        return;
-    }
-
-    // 4. Check if user exists
-    $userModel = new User();
-    $user = $userModel->findByUsername($username);
-
-    if (!$user) {
-        $errors[] = "User not exist";
-        $this->render('user/login', ["errors" => $errors]);
-        return;
-    }
-
-    // verify the password
-    if (!password_verify($password, $user['password'])) {
-        $errors[] = "Incorrect ";
-        $this->render('user/login', ["errors" => $errors]);
-        return;
-    }
-
-    // start the session
-    $_SESSION["user_id"] = $user["id"];
-    $_SESSION["username"] = $user["username"];
-    $_SESSION["role"] = $user["role"];
-
-    // rRedirect user back to login
-    header("Location: /tasks");
-    exit();
-}
+        $username = isset($_POST['username']) ? $_POST['username'] : null;
+        $password = isset($_POST['password']) ? $_POST['password'] : null;
 
 
-// logout
-    public function logoutAction()
-    {
+        if (empty($username)) {
+            return $this->json(["success" => false,"error" => "username id required"]);
+        }
 
-    // start session
-     if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+        if (empty($password)) {
+            return $this->json(["success" => false, "error" => "password is required"
+            ]);
+        }
+
+        $userModel = new User();
+        $newUser = $userModel->createUser($username, $password);
+
+        return $this->json(["success" => true, "data" => $newUser]);
     }
 
 
-    // unset the session 
-    $_SESSION = [];
+    public function updateAction() {
 
-    if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(
-            session_name(),
-            '',
-            time() - 42000,
-            $params["path"],
-            $params["domain"],
-            $params["secure"],
-            $params["httponly"]
-        );
+        $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            return $this->json([ "success" => false, "error" => "ID required"]);
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+            return $this->json([ "success" => false, "error" => "Method not allowed"]);
+        }
+
+        // read updated data 
+        $input = file_get_contents("php://input");
+        $data = [];
+        parse_str($input, $data);
+
+        // validate
+        if (empty($data['username']) && empty($data['password'])) {
+            return $this->json([ "success" => false, "error" => "Nothing to update"]);
+        }
+
+        //check if user exists
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            return $this->json([ "success" => false, "error" => "User not found :("
+            ]);
+        }
+
+        // Update user
+        $updatedUser = $userModel->updateUser($id, $data);
+
+        if (!$updatedUser) {
+            return $this->json([ "success" => false, "error" => "Update failed"
+            ]);
+        }
+
+        // return success
+        return $this->json([
+            "success" => true,
+            "data" => $updatedUser
+        ]);
     }
 
-    // destry session
-    session_destroy();
 
-    // redirect to /login 
-    header("Location: /tasks");
-    exit();
+    public function deleteAction() {
+
+         $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            return $this->json([ "success" => false, "error" => "ID required"]);
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+            return $this->json(["success" => false, "error" => "Method not allowed"]);
+        }
+
+        $userModel = new User();
+        $user = $userModel->findById($id);
+
+        if (!$user) {
+            return $this->json(["success" => false, "error" => "User not found"]);
+        }
+
+        $deletedUser = $userModel->deleteUser($id);
+
+          if (!$deletedUser) {
+            return $this->json(["success" => false,"error" => "Delete failed"]);
     }
+
+        return $this->json([
+            "success" => true, "message" => "User deleted correctly"]);
+    }
+
 }
