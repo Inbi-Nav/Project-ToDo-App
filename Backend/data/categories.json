@@ -1,0 +1,9 @@
+[
+    {
+        "id": 1,
+        "title": "category_name_1",
+        "description": "Write a comprehensive description",
+        "created_at": "2025-01-01 10:00:00",
+        "user_id": 1
+    }
+]

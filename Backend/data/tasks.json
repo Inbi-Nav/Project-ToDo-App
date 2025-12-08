@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1, 
+        "title": "title_1",
+        "description": "Write a comprehensive description",
+        "status": "pending",  // One of: pending, in_progress, completed
+        "created_at": "2025-01-01 10:00:00",
+        "updated_at": "2025-01-01 10:00:00",
+        "start_timestamp": "2025-01-02 08:00:00",  // Planned start
+        "end_timestamp": "2025-01-05 18:00:00",    // Deadline
+        "user_id": 1, 
+        "category_id": 1  // ( should be null if no category)
+    }
+]
