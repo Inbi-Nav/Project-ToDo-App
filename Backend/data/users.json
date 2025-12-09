@@ -4,5 +4,11 @@
         "username": "user_1",
         "password": "$2y$10$9YiX4wFLaKrG5nd8Mb\/w5Oiu4cm5ooVzRe2AMk\/f10TwJex0I7s16",
         "created_at": "2025-12-08 17:18:35"
+    },
+    {
+        "id": 2,
+        "username": "teo",
+        "password": "$2y$10$NatL2kWBJCHEqgiSJB\/WN.gEkK3ctaJywPB0oz6BnFxdE5A\/xHwHG",
+        "created_at": "2025-12-09 11:11:25"
     }
 ]
