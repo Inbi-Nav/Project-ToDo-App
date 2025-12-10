@@ -85,6 +85,8 @@ Class Task {
         $tasks[] = $newTask;
 
         // Save to file
+        // $this->writeTasks($tasks);
+        // return $newTask;
         if ($this->writeTasks($tasks)) {
             return [
                 'success' => true,
@@ -116,8 +118,7 @@ Class Task {
             if ($task['id'] == $id) {
                 $taskFound = true;
 
-                // Update only provided fields
-                if (isset($data['title']) && !empty(trim($data['title']))) {
+                if (isset($data['title'])) {
                     $tasks[$key]['title'] = trim($data['title']);
                 }
 
@@ -137,7 +138,7 @@ Class Task {
 
                     $tasks[$key]['status'] = $status;
 
-                    // Auto-set timestamps based on status change
+                    // Auto-set timestamps based on status change - It will require a revisit - use match might be a better option
                     if ($status === 'in progress' && $tasks[$key]['start_at'] === null) {
                         $tasks[$key]['start_at'] = date('Y-m-d H:i:s');
                     }
@@ -161,11 +162,48 @@ Class Task {
                 }
 
                 // Save changes
+                // $this->writeTasks($tasks);
+                // return $tasks[$key];
                 if ($this->writeTasks($tasks)) {
                     return [
                         'success' => true,
                         'message' => 'Task updated successfully',
                         'task' => $tasks[$key]
+                    ];
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => 'Error saving changes to file'
+                    ];
+                }
+            }
+        }
+ 
+        return [
+            'success' => false,
+            'message' => 'Task not found'
+        ];
+    }
+
+    // Delete tasks
+
+    public function deleteTask(int $id): array{
+        $tasks = $this->readTasks();
+
+        foreach($tasks as $key=>$task) {
+            if($task['id'] == $id) {
+                
+                //Remove
+                unset($tasks[$key]);
+                
+                //Reindex
+                $tasks = array_values($tasks);
+
+                //Save changes
+                 if ($this->writeTasks($tasks)) {
+                    return [
+                        'success' => true,
+                        'message' => 'Task deleted successfully'
                     ];
                 } else {
                     return [
@@ -181,11 +219,6 @@ Class Task {
             'message' => 'Task not found'
         ];
     }
-
-    // Delete tasks
-
-
-
 
 
     // Filter by Specific Tasks
