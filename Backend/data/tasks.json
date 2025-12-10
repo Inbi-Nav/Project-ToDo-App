@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "title": "001 - NEW Test Task Model of ToDo App",
+        "description": "Complete Sprint",
+        "status": "pending",
+        "created_at": "2025-12-10 16:31:03",
+        "start_at": null,
+        "end_at": null,
+        "user_id": 1,
+        "category_id": 1
+    },
+    {
+        "id": 2,
+        "title": "002 - NEW Test Task Model of ToDo App",
+        "description": "Complete Sprint",
+        "status": "pending",
+        "created_at": "2025-12-10 16:31:03",
+        "start_at": null,
+        "end_at": null,
+        "user_id": 2,
+        "category_id": 2
+    },
+    {
+        "id": 3,
+        "title": "003 - NEW Test Task Model of ToDo App",
+        "description": "Complete Sprint",
+        "status": "pending",
+        "created_at": "2025-12-10 16:31:03",
+        "start_at": null,
+        "end_at": null,
+        "user_id": 3,
+        "category_id": 3
+    }
+]

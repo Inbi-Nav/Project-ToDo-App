@@ -27,7 +27,7 @@ Class Task {
 
     // Read tasks (generic)
 
-    private function readTasks(){
+    private function readTasks(): array {
         $jsonContent = file_get_contents($this->filePath);
         $tasks = json_decode($jsonContent,true);
         
@@ -38,7 +38,7 @@ Class Task {
 
     // Write tasks (generic)
 
-    private function writeTasks ($tasks){
+    private function writeTasks (array $tasks): bool{
         $jsonContent = json_encode($tasks, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE); // makes JSON more readable
         return file_put_contents($this->filePath, $jsonContent)!== false;
     }
@@ -46,7 +46,7 @@ Class Task {
 
     // Get task ID - generate manual auto_increment task ID (generic)
 
-    private function getNextId(){
+    private function getNextId(): int {
         $tasks=$this->readTasks();
 
         if (empty($tasks)){
@@ -56,24 +56,24 @@ Class Task {
         $maxId=max(array_column($tasks,'id'));
         return $maxId + 1;
     }
+    
 
-    // Create tasks 
-    // QQ: Shall we consider include a required fields  valdation to our create functions? 
+    // Create task 
 
-    public function createTask($item){
+    public function createTask(string $title, array $data): array {
          $tasks = $this->readTasks();
          $newId = $this->getNextId();
 
          $newTask = [
             'id' => $newId,
-            'title' => trim($item['title']),
-            'description' => isset($data['description']) ? trim($item['description']) : '',
-            'status' => 'pending',      // Default status during creation (hidden in the view). Later with updates, Enum vs Conditional. 
+            'title' => trim($title),
+            'description' => isset($data['description']) ? trim($data['description']) : '',
+            'status' => 'pending',      // Default status
             'created_at' => date('Y-m-d H:i:s'),
-            'start_at' => null,         // Should be set when task starts (status "in progress") or manually set by the user.
-            'end_at' => null,           // Should be set when task completes (status "completed"), or afterwards manually updated by the user.
-            'user_id' => (int)$item['user_id'],
-            'category_id' => isset($item['category_id']) ? (int)$item['category_id'] : null
+            'start_at' => null,         
+            'end_at' => null,           
+            'user_id' => (int)$data['user_id'],
+            'category_id' => isset($data['category_id']) ? (int)$data['category_id'] : null
         ];
 
         $tasks[] = $newTask;
@@ -94,6 +94,11 @@ Class Task {
 
     }
 
+    // Read All tasks
+    public function readAllTasks() {
+        return $this->readTasks();
+    }
+
 
     // Update (modify) tasks
     
@@ -101,7 +106,7 @@ Class Task {
     // Delete tasks
 
 
-    // Read/Get All tasks
+
 
 
     // Filter by Specific Tasks
