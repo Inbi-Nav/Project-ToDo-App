@@ -15,12 +15,11 @@ echo "-------------------\n";
 $readTasks = $taskModel->readAllTasks();
 print_r($readTasks);
 
-$updateResult = $taskModel->updateTask( 
-    3, 
+$updateResult = $taskModel->updateTask(3, 
     [
         'title' => 'Changing TITLE',
         'description' => 'Changing Description',
-        'status' => 'in progress'
+        'status' => 'completed'
     ]
 );
 

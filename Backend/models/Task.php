@@ -221,7 +221,57 @@ Class Task {
     }
 
 
-    // Filter by Specific Tasks
+    // Filter by Specific Paramenter
+
+    public function filterByTask(int $id): array {
+        $tasks = $this->readTasks();
+        $result=[];
+
+        foreach($tasks as $task) {
+            if($task['id'] === $id){
+                $result[] = $task;
+            }
+        }
+        return $result;
+    }
+
+        public function filterByUserId(int $userId): array {
+        $tasks = $this->readTasks();
+        $result=[];
+
+        foreach($tasks as $task) {
+            if($task['user_id'] == $userId){
+                $result[] = $task;
+            }
+        }
+        return $result;
+    }
+
+    public function filterByStatus(string $status): array {
+        $tasks = $this->readTasks();
+        $result = [];
+
+        foreach ($tasks as $task) {
+            if ($task['status'] === $status) {
+                $result[] = $task;
+            }
+        }
+        return $result;
+    }
+
+    public function filterByCategoryId(int $categoryId): array {
+        $tasks = $this->readTasks();
+        $result = [];
+
+        foreach($tasks as $task) {
+            if($task['category_id'] === $categoryId){
+                $result[] = $task;
+            }
+        }
+        return $result;
+    }
+
+
 
 
 }
