@@ -57,6 +57,12 @@ Class Task {
         return $maxId + 1;
     }
     
+    // To validate status value
+    private function isValidStatus(string $status): bool {
+        $validStatuses = ['pending', 'in progress', 'completed'];
+        return in_array(strtolower($status), $validStatuses);
+    }
+
 
     // Create task 
 
@@ -94,7 +100,7 @@ Class Task {
 
     }
 
-    // Read All tasks
+    // Read tasks (All)
     public function readAllTasks() {
         return $this->readTasks();
     }
@@ -102,6 +108,79 @@ Class Task {
 
     // Update (modify) tasks
     
+    public function updateTask(int $id, array $data): array {
+        $tasks = $this->readTasks();
+        $taskFound = false;
+
+        foreach ($tasks as $key => $task) {
+            if ($task['id'] == $id) {
+                $taskFound = true;
+
+                // Update only provided fields
+                if (isset($data['title']) && !empty(trim($data['title']))) {
+                    $tasks[$key]['title'] = trim($data['title']);
+                }
+
+                if (isset($data['description'])) {
+                    $tasks[$key]['description'] = trim($data['description']);
+                }
+
+                if (isset($data['status'])) {
+                    $status = strtolower(trim($data['status']));
+                    
+                    if (!$this->isValidStatus($status)) {
+                        return [
+                            'success' => false,
+                            'message' => 'Invalid status. Must be: pending, in progress, or completed'
+                        ];
+                    }
+
+                    $tasks[$key]['status'] = $status;
+
+                    // Auto-set timestamps based on status change
+                    if ($status === 'in progress' && $tasks[$key]['start_at'] === null) {
+                        $tasks[$key]['start_at'] = date('Y-m-d H:i:s');
+                    }
+
+                    if ($status === 'completed' && $tasks[$key]['end_at'] === null) {
+                        $tasks[$key]['end_at'] = date('Y-m-d H:i:s');
+                    }
+                }
+
+                // Allow manual timestamp updates
+                if (isset($data['start_at'])) {
+                    $tasks[$key]['start_at'] = $data['start_at'];
+                }
+
+                if (isset($data['end_at'])) {
+                    $tasks[$key]['end_at'] = $data['end_at'];
+                }
+
+                if (isset($data['category_id'])) {
+                    $tasks[$key]['category_id'] = $data['category_id'] !== null ? (int)$data['category_id'] : null;
+                }
+
+                // Save changes
+                if ($this->writeTasks($tasks)) {
+                    return [
+                        'success' => true,
+                        'message' => 'Task updated successfully',
+                        'task' => $tasks[$key]
+                    ];
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => 'Error saving changes to file'
+                    ];
+                }
+            }
+        }
+
+        return [
+            'success' => false,
+            'message' => 'Task not found'
+        ];
+    }
 
     // Delete tasks
 
