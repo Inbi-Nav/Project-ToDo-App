@@ -8,6 +8,7 @@ class Category {
     private string $name;
     private ?string $description = null;
     private string $created_at;
+    private int $user_id;
 
     private string $filePath;
 
@@ -55,11 +56,43 @@ class Category {
         return $maxId + 1;
     }
 
-    // Create Category 
+    // Create Category
+    
+        public function createCategory(string $name, array $data): array {
+        $categories = $this->readCategories();
+        $newId = $this->getNextId();
+
+        $newCategory = [
+            'id' => $newId,
+            'name' => trim($name),
+            'description' => isset($data['description']) ? trim($data['description']) : null,
+            'created_at' => date('Y-m-d H:i:s'),
+            'user_id' => (int)$data['user_id']
+        ];
+
+        $categories[] = $newCategory;
+
+        // Save to file
+        $this->writeCategories($categories);
+        return $newCategory;
+    }
 
 
-    // Read Category 
+    // Read Category
+    public function readAllCategories() {
+        return $this->readCategories();
+    }
 
+    public function findByCategoryId(int $id): ?array {
+        $categories = $this->readCategories();
+
+        foreach ($categories as $category) {
+            if ($category['id'] == $id) {
+                return $category;
+            }
+        }
+        return null;
+    }
 
     // Update Category 
 
