@@ -15,6 +15,13 @@ return [
     '/tasks/update' => 'task#update',
     '/tasks/delete' => 'task#delete',
 
+    // Category CRUD
+    '/categories'        => 'category#index',
+    '/categories/show'   => 'category#show',
+    '/categories/create' => 'category#create',
+    '/categories/update' => 'category#update',
+    '/categories/delete' => 'category#delete',
+
 ];
 
 

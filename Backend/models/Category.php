@@ -94,6 +94,18 @@ class Category {
         return null;
     }
 
+    public function filterByUserId(int $userId): array {
+        $categories = $this->readCategories();
+        $result = [];
+
+        foreach ($categories as $category) {
+            if($category['user_id'] == $userId){
+                $result[] = $category;
+            }
+        }
+        return $result;
+    }
+
     // Update Category 
 
     public function updateCategory(int $id, array $data): ? array {
