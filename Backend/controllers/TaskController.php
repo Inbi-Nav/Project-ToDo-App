@@ -2,7 +2,6 @@
 
 require_once __DIR__ . '/../models/Task.php';
 require_once __DIR__ . '/../models/User.php';
-
 require_once __DIR__ . '/../models/Category.php';
 
 class TaskController extends ApplicationController{ 
@@ -68,18 +67,19 @@ class TaskController extends ApplicationController{
 
     // READ (indexAction & showAction)
 
-
+    
     // UPDATE
+    // Required: id parameter in URL
     public function updateAction() {
 
         $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
         if (!$id) {
-            return $this->json([ "success" => false, "error" => "Task ID required"]);
+            return $this->json(["success" => false, "error" => "Task ID required"]);
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-            return $this->json([ "success" => false, "error" => "Method not allowed"]);
+            return $this->json(["success" => false, "error" => "Method not allowed"]);
         }
 
         // Read PUT data from input ("modified")
@@ -110,10 +110,33 @@ class TaskController extends ApplicationController{
         return $this->json($result);
     }
 
-
     // DELETE
+    //Required: id parameter in URL
 
+     public function deleteAction(){
 
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+
+        if (!$id) {
+            return $this->json(["success" => false, "error" => "Task ID required"]);
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+            return $this->json(["success" => false, "error" => "Method not allowed"]);
+        }
+
+        // Check if task exists
+        $taskModel = new Task();
+        $existingTask = $taskModel->filterByTask($id);
+
+        if (empty($existingTask)) {
+            return $this->json(["success" => false, "error" => "Task not found"]);
+        }
+
+        // Delete task
+        $result = $taskModel->deleteTask($id);
+        return $this->json($result);
+    }
 
 }
 
