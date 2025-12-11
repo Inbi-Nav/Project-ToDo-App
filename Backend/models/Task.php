@@ -26,7 +26,6 @@ Class Task {
     }
 
     // Read tasks (generic)
-
     private function readTasks(): array {
         $jsonContent = file_get_contents($this->filePath);
         $tasks = json_decode($jsonContent,true);
@@ -37,7 +36,6 @@ Class Task {
 
 
     // Write tasks (generic)
-
     private function writeTasks (array $tasks): bool{
         $jsonContent = json_encode($tasks, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE); // makes JSON more readable
         return file_put_contents($this->filePath, $jsonContent)!== false;
@@ -45,7 +43,6 @@ Class Task {
 
 
     // Get task ID - generate manual auto_increment task ID (generic)
-
     private function getNextId(): int {
         $tasks=$this->readTasks();
 
@@ -65,7 +62,6 @@ Class Task {
 
 
     // Create task 
-
     public function createTask(string $title, array $data): array {
          $tasks = $this->readTasks();
          $newId = $this->getNextId();
@@ -76,9 +72,7 @@ Class Task {
             'description' => isset($data['description']) ? trim($data['description']) : '',
             'status' => 'pending',      // Default status
             'created_at' => date('Y-m-d H:i:s'),
-            // 'start_at' => null, 
             'start_at' => isset($data['start_at']) ? $data['start_at'] : null,        
-            // 'end_at' => null,
             'end_at' => isset($data['end_at']) ? $data['end_at'] : null,            
             'user_id' => (int)$data['user_id'],
             'category_id' => isset($data['category_id']) ? (int)$data['category_id'] : null
@@ -109,9 +103,7 @@ Class Task {
         return $this->readTasks();
     }
 
-
     // Update (modify) tasks
-    
     public function updateTask(int $id, array $data): array {
         $tasks = $this->readTasks();
         $taskFound = false;

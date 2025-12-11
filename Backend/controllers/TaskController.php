@@ -70,6 +70,45 @@ class TaskController extends ApplicationController{
 
 
     // UPDATE
+    public function updateAction() {
+
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+
+        if (!$id) {
+            return $this->json([ "success" => false, "error" => "Task ID required"]);
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+            return $this->json([ "success" => false, "error" => "Method not allowed"]);
+        }
+
+        // Read PUT data from input ("modified")
+        $input = file_get_contents("php://input");
+        $data = [];
+        parse_str($input, $data);
+
+        // Validate - at least a field has been provided ("modified")
+        if(empty($data['title']) && 
+           empty($data['description']) && 
+           empty($data['status']) && 
+          !isset($data['start_at']) && 
+          !isset($data['end_at']) && 
+          !isset($data['category_id'])) { 
+            return $this->json(["success" => false, "error" => "Nothing to update"]);
+        }
+
+        // Check if task exists
+        $taskModel = new Task();
+        $existingTask = $taskModel->filterByTask($id);
+
+        if (empty($existingTask)) {
+            return $this->json(["success" => false, "error" => "Task not found"]);
+        }
+
+        // Update task
+        $result = $taskModel->updateTask($id, $data);
+        return $this->json($result);
+    }
 
 
     // DELETE
