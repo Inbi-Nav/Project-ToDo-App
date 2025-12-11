@@ -54,8 +54,7 @@ class CategoryController extends ApplicationController {
     }
 
 
-    // READ - Get all categories
-
+    // READ - (all categories or by filter paramenter)
     public function indexAction() {
         
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -109,6 +108,88 @@ class CategoryController extends ApplicationController {
             "data" => $category
         ]);
     }
+
+    // UPDATE Category
+    // Required: id parameter in URL
+    public function updateAction() {
+
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+
+        if (!$id) {
+            return $this->json(["success" => false, "error" => "Category ID is required"]);
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+            return $this->json(["success" => false, "error" => "Method not allowed"]);
+        }
+
+        // Read PUT data from input ("modified")
+        $input = file_get_contents("php://input");
+        $data = [];
+        parse_str($input, $data);
+
+        // Validate - at least a field has been provided ("modified")
+        if (empty($data['name']) && 
+            empty($data['description'])) {
+            return $this->json(["success" => false, "error" => "Nothing to update. Provide name or description"]);
+        }
+
+        // Check if category exists
+        $categoryModel = new Category();
+        $existingCategory = $categoryModel->findByCategoryId($id);
+
+        if (!$existingCategory) {
+            return $this->json(["success" => false, "error" => "Category not found"]);
+        }
+
+        // Update category
+        $updatedCategory = $categoryModel->updateCategory($id, $data);
+
+        if (!$updatedCategory) {
+            return $this->json(["success" => false, "error" => "Update failed"]);
+        }
+
+        return $this->json([
+            "success" => true,
+            "data" => $updatedCategory
+        ]);
+    }
+
+    // DELETE Category
+    // Required: id parameter in URL
+    public function deleteAction() {
+
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+
+        if (!$id) {
+            return $this->json(["success" => false, "error" => "Category ID is required"]);
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+            return $this->json(["success" => false, "error" => "Method not allowed"]);
+        }
+
+        // Check if category exists
+        $categoryModel = new Category();
+        $existingCategory = $categoryModel->findByCategoryId($id);
+
+        if (!$existingCategory) {
+            return $this->json(["success" => false, "error" => "Category not found"]);
+        }
+
+        // Delete category
+        $result = $categoryModel->deleteCategory($id);
+
+        if ($result === null) {
+            return $this->json(["success" => false, "error" => "Delete failed"]);
+        }
+
+        return $this->json([
+            "success" => true,
+            "message" => "Category deleted successfully"
+        ]);
+    }
+
 }
 
 ?>
