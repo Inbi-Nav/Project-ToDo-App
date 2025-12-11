@@ -1,12 +1,24 @@
 <?php
 
 require_once __DIR__ . '/../models/Task.php';
+require_once __DIR__ . '/../models/User.php';
+
 require_once __DIR__ . '/../models/Category.php';
 
 class TaskController extends ApplicationController{ 
    
     // CREATE
     // Required: title, user_id
+
+      public function indexAction() {
+        $userModel = new Task();
+        $tasks = $userModel->readAllTasks();
+
+        $this->json(["success" => true,"data" => $tasks ]);
+
+        exit();
+    }
+
 
     public function createAction() {
 
@@ -50,7 +62,7 @@ class TaskController extends ApplicationController{
         $taskModel = new Task();
         $result = $taskModel->createTask($title, $data);
 
-        return $this->json($result);
+        return $this->json(["sucsess" => true,"data" =>$result]);
     }
 
 

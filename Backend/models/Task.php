@@ -76,8 +76,10 @@ Class Task {
             'description' => isset($data['description']) ? trim($data['description']) : '',
             'status' => 'pending',      // Default status
             'created_at' => date('Y-m-d H:i:s'),
-            'start_at' => null,         
-            'end_at' => null,           
+            // 'start_at' => null, 
+            'start_at' => isset($data['start_at']) ? $data['start_at'] : null,        
+            // 'end_at' => null,
+            'end_at' => isset($data['end_at']) ? $data['end_at'] : null,            
             'user_id' => (int)$data['user_id'],
             'category_id' => isset($data['category_id']) ? (int)$data['category_id'] : null
         ];

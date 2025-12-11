@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../models/Task.php';
 
-
-
 // Test Task creation
 $taskModel = new Task();
 $result = $taskModel->createTask(
