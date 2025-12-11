@@ -5,6 +5,7 @@ class User {
     private $id;
     private $username;
     private $password;
+    private $image;
     private $created_at;
 
     private $filePath;
@@ -45,6 +46,7 @@ class User {
             "id" => $newId,
             "username" => $username,
             "password" => password_hash($password, PASSWORD_DEFAULT),
+            "image" => null,
             "created_at" => date("Y-m-d H:i:s")
         ];
 
@@ -81,6 +83,11 @@ class User {
                 if(isset($data['password'])) {
                     $users[$key]['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
                 }
+
+                if(isset($data['image'])) {
+                    $users[$key]['image'] = $data['image'];
+                }
+                
                 $this->saveAll($users);
                 return $users[$key];
             }

@@ -1,13 +1,7 @@
-module.exports = {
+export default {
   content: [
-    "./*.html",
-    "./css/*.css",
-    "../backend/views/**/*.phtml",
-    "../backend/views/**/*.php",
-    "../backend/**/*.php"
+    "../Backend/views/**/*.phtml",
+    "../Backend/views/**/*.php",
+    "../Backend/**/*.php",
   ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
+};

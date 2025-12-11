@@ -75,7 +75,7 @@ class UserController extends ApplicationController
         parse_str($input, $data);
 
         // validate
-        if (empty($data['username']) && empty($data['password'])) {
+        if (empty($data['username']) && empty($data['password']) && empty($data['image'])) {
             return $this->json([ "success" => false, "error" => "Nothing to update"]);
         }
 
