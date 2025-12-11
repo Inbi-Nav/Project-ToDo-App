@@ -83,7 +83,7 @@ class Category {
         return $this->readCategories();
     }
 
-    public function findByCategoryId(int $id): ?array {
+    public function findByCategoryId(int $id): ? array {
         $categories = $this->readCategories();
 
         foreach ($categories as $category) {
@@ -96,8 +96,49 @@ class Category {
 
     // Update Category 
 
+    public function updateCategory(int $id, array $data): ? array {
+        $categories = $this->readCategories();
 
+        foreach ($categories as $key => $category) {
+            if ($category['id'] == $id) {
+
+                if (isset($data['name'])) {
+                    $categories[$key]['name'] = trim($data['name']);
+                }
+
+                if (isset($data['description'])) {
+                    $categories[$key]['description'] = trim($data['description']);
+                }
+
+                // Save changes
+                $this->writeCategories($categories);
+                return $categories[$key];
+            }
+        }
+        return null;
+    }
+    
     // Delete Category 
+
+    public function deleteCategory(int $id): ?array {
+        $categories = $this->readCategories();
+
+        foreach ($categories as $key => $category) {
+            if ($category['id'] == $id) {
+                
+                // Remove
+                unset($categories[$key]);
+
+                // Reindex
+                $categories = array_values($categories);
+
+                // Save changes
+                $this->writeCategories($categories);
+                return $categories[$key];
+            }
+        }
+        return null;
+    }
 
 }
 ?>

@@ -3,21 +3,14 @@
         "id": 1,
         "name": "Work",
         "description": "Work Task Plan",
-        "created_at": "2025-12-11 00:53:21",
+        "created_at": "2025-12-11 01:25:26",
         "user_id": 1
     },
     {
         "id": 2,
         "name": "Shopping List",
-        "description": null,
-        "created_at": "2025-12-11 00:53:21",
-        "user_id": 1
-    },
-    {
-        "id": 3,
-        "name": "Personal",
-        "description": "My Personal Todo",
-        "created_at": "2025-12-11 00:53:21",
+        "description": "Adding Description",
+        "created_at": "2025-12-11 01:25:26",
         "user_id": 1
     }
 ]
