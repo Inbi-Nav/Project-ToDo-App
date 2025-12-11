@@ -9,16 +9,6 @@ class TaskController extends ApplicationController{
     // CREATE
     // Required: title, user_id
 
-      public function indexAction() {
-        $userModel = new Task();
-        $tasks = $userModel->readAllTasks();
-
-        $this->json(["success" => true,"data" => $tasks ]);
-
-        exit();
-    }
-
-
     public function createAction() {
 
         if($_SERVER['REQUEST_METHOD'] !=='POST') {
@@ -65,7 +55,67 @@ class TaskController extends ApplicationController{
     }
 
 
-    // READ (indexAction & showAction)
+    // READ - (all Tasks or by filter paramenter)
+    // Optional query params: user_id, status, category_id
+
+    public function indexAction() {
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            return $this->json(["success" => false, "error" => "Method not allowed"]);
+        }
+
+        $taskModel = new Task();
+        
+        // Check for filter parameters
+        $user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : null;
+        $status = isset($_GET['status']) ? trim($_GET['status']) : null;
+        $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+
+        // Apply filters if parameters are provided
+        if ($user_id !== null) {
+            $tasks = $taskModel->filterByUserId($user_id);
+        } elseif ($status !== null) {
+            $tasks = $taskModel->filterByStatus($status);
+        } elseif ($category_id !== null) {
+            $tasks = $taskModel->filterByCategoryId($category_id);
+        } else {
+        // No filters - return all tasks
+            $tasks = $taskModel->readAllTasks();
+        }
+
+        return $this->json([
+            "success" => true,
+            "count" => count($tasks),
+            "data" => $tasks
+        ]);
+    }
+
+    // READ - (specific task by ID)
+    // Required: id parameter in URL
+    public function showAction() {
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            return $this->json(["success" => false, "error" => "Method not allowed"]);
+        }
+
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+
+        if (!$id) {
+            return $this->json(["success" => false, "error" => "Task ID is required"]);
+        }
+
+        $taskModel = new Task();
+        $task = $taskModel->filterByTask($id);
+
+        if (empty($task)) {
+            return $this->json(["success" => false, "error" => "Task not found"]);
+        }
+
+        return $this->json([
+            "success" => true,
+            "data" => $task[0] // filterByTask returns an array, we want the first element
+        ]);
+    }
 
     
     // UPDATE

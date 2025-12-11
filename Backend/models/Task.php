@@ -9,10 +9,10 @@ Class Task {
     private string $description;
     private string $status;
     private string $created_at;
-    private ?string $start_at = null;
-    private ?string $end_at = null;
+    private ?string $start_at;
+    private ?string $end_at;
     private int $user_id;
-    private ?int $category_id = null;
+    private ?int $category_id;
 
     private $filePath;
 
@@ -34,13 +34,11 @@ Class Task {
         return is_array($tasks) ? $tasks :[];
     }
 
-
     // Write tasks (generic)
     private function writeTasks (array $tasks): bool{
         $jsonContent = json_encode($tasks, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE); // makes JSON more readable
         return file_put_contents($this->filePath, $jsonContent)!== false;
     }
-
 
     // Get task ID - generate manual auto_increment task ID (generic)
     private function getNextId(): int {
@@ -59,7 +57,6 @@ Class Task {
         $validStatuses = ['pending', 'in progress', 'completed'];
         return in_array(strtolower($status), $validStatuses);
     }
-
 
     // Create task 
     public function createTask(string $title, array $data): array {
@@ -131,15 +128,6 @@ Class Task {
                     }
 
                     $tasks[$key]['status'] = $status;
-
-                    // Auto-set timestamps based on status change - It will require a revisit - use match might be a better option
-                    if ($status === 'in progress' && $tasks[$key]['start_at'] === null) {
-                        $tasks[$key]['start_at'] = date('Y-m-d H:i:s');
-                    }
-
-                    if ($status === 'completed' && $tasks[$key]['end_at'] === null) {
-                        $tasks[$key]['end_at'] = date('Y-m-d H:i:s');
-                    }
                 }
 
                 // Allow manual timestamp updates
@@ -180,7 +168,6 @@ Class Task {
     }
 
     // Delete tasks
-
     public function deleteTask(int $id): array{
         $tasks = $this->readTasks();
 
@@ -214,9 +201,7 @@ Class Task {
         ];
     }
 
-
     // Filter by Specific Paramenter
-
     public function filterByTask(int $id): array {
         $tasks = $this->readTasks();
         $result=[];
@@ -265,10 +250,6 @@ Class Task {
         return $result;
     }
 
-
-
-
 }
-
 
 ?>
