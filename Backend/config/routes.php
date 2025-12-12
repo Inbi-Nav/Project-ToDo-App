@@ -14,6 +14,13 @@ return [
 
 
 
+    // Task CRUD
+    '/tasks'        => 'task#index',
+    '/tasks/show'   => 'task#show',
+    '/tasks/create' => 'task#create',
+    '/tasks/update' => 'task#update',
+    '/tasks/delete' => 'task#delete',
+
 ];
 
 
