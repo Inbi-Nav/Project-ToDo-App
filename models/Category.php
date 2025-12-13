@@ -6,12 +6,11 @@ class Category {
 
     private int $id;
     private string $name;
-    private ?string $description = null;
+    private ?string $description;
     private string $created_at;
     private int $user_id;
 
     private string $filePath;
-
 
     public function __construct() {
         $this->filePath = __DIR__ . '/../data/categories.json';
@@ -21,7 +20,6 @@ class Category {
             file_put_contents($this->filePath, json_encode([]));
         }
     }
-
 
      // Read category(ies) (generic)
     private function readCategories(): array {
@@ -43,7 +41,6 @@ class Category {
     }
 
     // Get category ID - generate manual auto_increment ID (generic)
-
     private function getNextId(): int {
         $categories = $this->readCategories();
 
@@ -57,8 +54,7 @@ class Category {
     }
 
     // Create Category
-    
-        public function createCategory(string $name, array $data): array {
+    public function createCategory(string $name, array $data): array {
         $categories = $this->readCategories();
         $newId = $this->getNextId();
 
@@ -94,8 +90,19 @@ class Category {
         return null;
     }
 
-    // Update Category 
+    public function filterByUserId(int $userId): array {
+        $categories = $this->readCategories();
+        $result = [];
 
+        foreach ($categories as $category) {
+            if($category['user_id'] == $userId){
+                $result[] = $category;
+            }
+        }
+        return $result;
+    }
+
+    // Update Category 
     public function updateCategory(int $id, array $data): ? array {
         $categories = $this->readCategories();
 
@@ -119,7 +126,6 @@ class Category {
     }
     
     // Delete Category 
-
     public function deleteCategory(int $id): ?array {
         $categories = $this->readCategories();
 
