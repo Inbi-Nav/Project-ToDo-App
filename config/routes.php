@@ -7,11 +7,6 @@ return [
     '/users/create' => 'user#create',
     '/users/update' => 'user#update',
     '/users/delete' => 'user#delete',
-    '/register' => 'user#register',
-     '/login'    => 'user#login',
-    '/logout'   => 'user#logout',
-
-
 
     // Task CRUD
     '/tasks'        => 'task#index',
@@ -26,6 +21,14 @@ return [
     '/categories/create' => 'category#create',
     '/categories/update' => 'category#update',
     '/categories/delete' => 'category#delete',
+
+
+    // Views
+    '/register' => 'user#register',
+    '/login'    => 'user#login',
+    '/dashboard' => 'user#dashboard',
+    '/logout'   => 'user#logout',
+    
 
 ];
 ?>

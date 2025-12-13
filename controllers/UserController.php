@@ -253,7 +253,25 @@ class UserController extends ApplicationController
         exit();
     }
 
+    public function dashboardAction() {
+        if(session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
+        if(!isset($_SESSION["user_id"])) {
+            header("Location: /login");
+            exit();
+        }
+
+        $categoryModel = new Category();
+        $taskModel= new Task();
+
+        $categories = $categoryModel->filterByUserId($_SESSION["user_id"]);
+        $tasks= $taskModel->filterByUserId($_SESSION["user_id"]);
+
+        $this->render("user/dashboard", ["categories" => $categories, "tasks" => $tasks, "username" => $_SESSION["username"]]);
+        
+    }
 
 
 
