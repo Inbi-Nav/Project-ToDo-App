@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../models/User.php';
 
+
 class UserController extends ApplicationController
 {
 
@@ -220,7 +221,7 @@ class UserController extends ApplicationController
         $_SESSION["user_id"] = $user["id"];
         $_SESSION["username"] = $user["username"];
 
-        header("Location: /tasks");
+        header("Location: /dashboard");
         exit();
     }
 

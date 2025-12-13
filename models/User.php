@@ -12,6 +12,7 @@ class User {
 
     public function __construct() {
         $this->filePath = __DIR__ . '/../data/users.json';
+
     }
 
 // Load all users

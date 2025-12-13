@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/output.css">
+
+
+</head>
+
+<body class="min-h-screen flex items-center justify-center from-gray-100 to-gray-200">
+
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+
+        <h1 class="text-3xl font-semibold text-gray-900 text-center mb-2">
+            Welcome Back
+        </h1>
+
+       <?php if (!empty($errors)): ?>
+    <div class="bg-red-100 border border-red-400 text-red-700 p-3 rounded-lg text-sm mb-6">
+        <?php foreach ($errors as $error): ?>
+            <p class="font-medium"> <?= htmlspecialchars($error) ?></p>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
+
+
+        <form method="POST" action="/login" class="space-y-6">
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Username
+                </label>
+                <input type="text" name="username" class="w-full p-3 rounded-lg border border-gray-300" placeholder="Enter your username"required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                Password
+                </label>
+                <input type="password" name="password" class="w-full p-3 rounded-lg border border-gray-300" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-sm">
+            Log In
+            </button>
+
+        </form>
+
+        <div class="my-6 border-t border-gray-200"></div>
+
+        <p class="text-center text-gray-600">
+            Don't have an account?
+            <a href="/register" class="text-blue-600 font-hover:underline">
+            Create one
+            </a>
+        </p>
+    </div>
+</body>
+</html>
