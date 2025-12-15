@@ -1,9 +1,9 @@
 [
     {
         "id": 1,
-        "username": "user_test",
-        "password": "$2y$10$TG3P3jEMOJ.BrK0roWVtPeVRGzKU\/L7mkFdvAp62uVxOgqv.oo0tG",
+        "username": "test",
+        "password": "$2y$10$eCLzbAMVVqoAHq1Cx92re.c1T..VXL2w5ze9A60jiuEFH3x16OJhS",
         "image": null,
-        "created_at": "2025-12-15 14:15:33"
+        "created_at": "2025-12-15 15:07:55"
     }
 ]

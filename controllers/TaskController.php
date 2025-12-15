@@ -54,8 +54,6 @@ class TaskController extends ApplicationController{
         exit();
     }
 
-
-
     // READ - (all Tasks or by filter paramenter)
     // Optional query params: user_id, status, category_id
 

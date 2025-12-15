@@ -38,8 +38,6 @@ class CategoryController extends ApplicationController {
         exit();
     }
 
-
-
     public function indexAction() {
         
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -174,7 +172,6 @@ class CategoryController extends ApplicationController {
             "message" => "Category deleted successfully"
         ]);
     }
-
 }
 
 ?>
