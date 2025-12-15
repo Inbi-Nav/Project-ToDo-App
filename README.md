@@ -10,3 +10,5 @@ The main objective of this project is to learn how to properly structure a real-
 
 php -S localhost:8000 -t Backend/web
 
+http://localhost:8000/register
+
