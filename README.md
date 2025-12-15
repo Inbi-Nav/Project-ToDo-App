@@ -9,3 +9,8 @@ The main objective of this project is to learn how to properly structure a real-
 ### ▶️ Run the Backend 
 
 php -S localhost:8000 -t Backend/web
+
+### ▶️ Run tailwind 
+
+
+npx tailwindcss -i ./web/css/tailwind.css -o ./web/css/output.css --watch

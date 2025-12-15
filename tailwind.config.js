@@ -3,7 +3,10 @@ module.exports = {
     "./views/**/*.phtml",
     "./controllers/**/*.php",
     "./models/**/*.php",
+    "./web/**/*.html",
   ],
-  theme: { extend: {} },
+  theme: {
+    extend: {},
+  },
   plugins: [],
 };

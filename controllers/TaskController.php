@@ -5,73 +5,54 @@ require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Category.php';
 
 class TaskController extends ApplicationController{ 
-   
-    // CREATE
-    // Required: title, user_id
 
+    public function createAction() {
 
-   public function createAction() {
-
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        return $this->json(["success" => false, "error" => "Method not allowed"]);
-    }
-
-    $title = trim($_POST['title'] ?? '');
-    $user_id = $_POST['user_id'] ?? null;
-    $description = trim($_POST['description'] ?? '');
-    $category_id = $_POST['category_id'] ?? null;
-    $start_at = $_POST['start_at'] ?? null;
-    $end_at = $_POST['end_at'] ?? null;
-
-    if (empty($title)) {
-        return $this->json(["success" => false, "error" => "Title is required"]);
-    }
-
-    if (empty($user_id)) {
-        return $this->json(["success" => false, "error" => "User_id is required"]);
-    }
-
-    // Validate user exists
-    $userModel = new User();
-    $user = $userModel->findById($user_id);
-
-    if (!$user) {
-        return $this->json(["success" => false, "error" => "User not found"]);
-    }
-
-    // Validate category if provided
-    if (!empty($category_id)) {
-        $categoryModel = new Category();
-        $category = $categoryModel->findByCategoryId($category_id);
-
-        if (!$category) {
-            return $this->json(["success" => false, "error" => "Category not found"]);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo "Method not allowed";
+            exit();
         }
+
+        $title = trim($_POST['title'] ?? '');
+        $user_id = $_POST['user_id'] ?? null;
+        $description = trim($_POST['description'] ?? '');
+        $category_id = $_POST['category_id'] ?? null;
+
+        if ($title === '') {
+            echo "Title is required";
+            exit();
+        }
+
+        if (!$user_id) {
+            echo "User ID is required";
+            exit();
+        }
+
+        if (!empty($category_id)) {
+            $categoryModel = new Category();
+            $category = $categoryModel->findByCategoryId($category_id);
+
+            if (!$category) {
+                echo "Category not found";
+                exit();
+            }
+        }
+
+        $data = [
+            'user_id' => $user_id,
+            'description' => $description
+        ];
+
+        if (!empty($category_id)) {
+            $data['category_id'] = $category_id;
+        }
+
+        $taskModel = new Task();
+        $taskModel->createTask($title, $data);
+
+        header("Location: /dashboard?cat=" . $category_id);
+        exit();
     }
-
-    // Build task data
-    $data = [
-        'user_id' => $user_id,
-        'description' => $description
-    ];
-
-    if ($category_id !== null && $category_id !== '') {
-        $data['category_id'] = $category_id;
-    }
-
-    if ($start_at !== null && $start_at !== '') {
-        $data['start_at'] = $start_at;
-    }
-
-    if ($end_at !== null && $end_at !== '') {
-        $data['end_at'] = $end_at;
-    }
-
-    $taskModel = new Task();
-    $result = $taskModel->createTask($title, $data);
-
-    return $this->json(["success" => true, "data" => $result]);
-}
 
 
 
@@ -140,73 +121,81 @@ class TaskController extends ApplicationController{
     
     // UPDATE
     // Required: id parameter in URL
-    public function updateAction() {
+   public function updateAction() {
 
-        $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
-        if (!$id) {
-            return $this->json(["success" => false, "error" => "Task ID required"]);
-        }
+    if (!$id) { echo "Task ID required"; exit(); }
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-            return $this->json(["success" => false, "error" => "Method not allowed"]);
-        }
+    $taskModel = new Task();
+    $existingTask = $taskModel->filterByTask($id);
 
-        // Read PUT data from input ("modified")
-        $input = file_get_contents("php://input");
-        $data = [];
-        parse_str($input, $data);
+    if (empty($existingTask)) { echo "Task not found"; exit(); }
 
-        // Validate - at least a field has been provided ("modified")
-        if(empty($data['title']) && 
-           empty($data['description']) && 
-           empty($data['status']) && 
-          !isset($data['start_at']) && 
-          !isset($data['end_at']) && 
-          !isset($data['category_id'])) { 
-            return $this->json(["success" => false, "error" => "Nothing to update"]);
-        }
-
-        // Check if task exists
-        $taskModel = new Task();
-        $existingTask = $taskModel->filterByTask($id);
-
-        if (empty($existingTask)) {
-            return $this->json(["success" => false, "error" => "Task not found"]);
-        }
-
-        // Update task
-        $result = $taskModel->updateTask($id, $data);
-        return $this->json($result);
+    // -------------------------------
+    // STEP 1: SHOW EDIT FORM
+    // -------------------------------
+    if (isset($_POST['edit_mode'])) {
+        // Render edit form inside dashboard
+        include VIEW_PATH . "/tasks/edit-inline.phtml";
+        return;
     }
+
+    // -------------------------------
+    // STEP 2: HANDLE REAL UPDATE
+    // -------------------------------
+    if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+        echo "Method not allowed"; exit();
+    }
+
+    // Read PUT data
+    $input = file_get_contents("php://input");
+    $data = [];
+    parse_str($input, $data);
+
+    // Update task
+    $taskModel->updateTask($id, $data);
+
+    // Redirect back
+    $category_id = $existingTask[0]['category_id'] ?? '';
+    header("Location: /dashboard?cat=" . $category_id);
+    exit();
+}
 
     // DELETE
     //Required: id parameter in URL
 
-     public function deleteAction(){
+    public function deleteAction() {
 
-        $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
-        if (!$id) {
-            return $this->json(["success" => false, "error" => "Task ID required"]);
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
-            return $this->json(["success" => false, "error" => "Method not allowed"]);
-        }
-
-        // Check if task exists
-        $taskModel = new Task();
-        $existingTask = $taskModel->filterByTask($id);
-
-        if (empty($existingTask)) {
-            return $this->json(["success" => false, "error" => "Task not found"]);
-        }
-
-        // Delete task
-        $result = $taskModel->deleteTask($id);
-        return $this->json($result);
+    if (!$id) {
+        echo "Task ID required";
+        exit();
     }
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+        echo "Method not allowed";
+        exit();
+    }
+
+    $taskModel = new Task();
+    $existingTask = $taskModel->filterByTask($id);
+
+    if (empty($existingTask)) {
+        echo "Task not found";
+        exit();
+    }
+
+    $category_id = $existingTask[0]['category_id'] ?? '';
+
+    // DELETE
+    $taskModel->deleteTask($id);
+
+    // REDIRECT
+    header("Location: /dashboard?cat=" . $category_id);
+    exit();
+}
 
 }
 

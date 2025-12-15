@@ -76,8 +76,31 @@ spl_autoload_register(function ($className) {
 // Example: GET /users
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
+// METHOD OVERRIDE (PUT / DELETE desde formularios)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method'])) {
+    $method = strtoupper($_POST['_method']);
+
+    if (in_array($method, ['PUT', 'DELETE'])) {
+        $_SERVER['REQUEST_METHOD'] = $method;
+    }
+}
+
+
 // Clean request path
 $request = $requestUri ?: '/';
+
+// Route must exist
+// --------------------------------------------------
+// SERVE STATIC FILES (CSS, JS, IMAGES)
+// --------------------------------------------------
+$staticFile = WEB_ROOT . $request;
+
+if (file_exists($staticFile) && !is_dir($staticFile)) {
+    $mime = mime_content_type($staticFile);
+    header("Content-Type: $mime");
+    readfile($staticFile);
+    exit();
+}
 
 // Route must exist
 if (!isset($routes[$request])) {

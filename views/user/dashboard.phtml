@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+
+<body class="min-h-screen font-mono bg-green-100 flex items-center justify-center">
+    
+    <div class="flex space-x-6">
+        <div class="w-full max-w-md bg-green-300 rounded-2xl shadow-xl p-8 border border-gray-200">
+            <div class="relative mb-6 flex items-center">
+               <h1 class="text-2xl text-blue-800 font-bold text mx-auto">
+                Welcome <?= htmlspecialchars($username) ?>! </h1>
+                <a href="/logout" class="absolute right-0 top-1 font-bold text-red-600 text-2xl hover:opacity-70" title="Logout">⏻️</a>
+            </div>
+            <section>
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Categories</h2>
+                <!-- Select category  -->
+                <form method="GET" action="/dashboard" class="mb-6">
+                    <select name="cat" class="w-full p-3 border rounded-lg bg-yellow-100">
+                        <option value="">Choose a category</option>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?= $cat['id'] ?>"
+                                <?= isset($_GET['cat']) && $_GET['cat'] == $cat['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($cat['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button class="mt-3 w-full bg-blue-500 text-white p-3 rounded-lg text-lg font-extrabold hover:bg-blue-700">     Select Category</button>
+                </form>
+
+                <!-- create categoryy -->
+                <h3 class="text-lg font-extrabold text-gray-900 mb-2">Create a new category</h3>
+                <form method="POST" action="/categories/create" class="space-y-3">
+                    <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?>">
+                    <input type="text" name="name" required placeholder="Insert name of the new category" class="w-full p-3 border      rounded-lg bg-gray-50">
+                    <button class="w-full bg-green-600 text-white p-3 rounded-lg font-extrabold hover:bg-green-800">
+                    CREATE 
+                    </button>
+                </form>
+            </section>
+        </div>
+
+        <?php if (!empty($_GET['cat'])): ?>
+        <!-- TASKS  -->
+        <div class="w-full max-w-md bg-green-300 rounded-2xl shadow-xl p-8 border border-gray-200">
+                <section>
+                    <h2 class="text-xl font-semibold text-black mb-3">
+                        Tasks in:
+                        <span class="text-blue-600">
+                            <?= ($categories[array_search($_GET['cat'], array_column($categories, 'id'))]['name']) ?>
+                        </span>
+                    </h2>
+                    <!-- Add  task  -->
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Add Task</h3>
+                    <form method="POST" action="/tasks/create" class="space-y-3 mb-5">
+                        <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?>">
+                        <input type="hidden" name="category_id" value="<?= $_GET['cat'] ?>">
+                        <input type="text" name="title" required placeholder="Insert a title" class="w-full p-3 border rounded-lg bg-gray-50">
+                        <textarea name="description" placeholder="Description of the task (optional)" class="w-full p-3 border rounded-lg bg-gray-50"></textarea>
+                        <button class="w-full bg-blue-600 text-white p-3 rounded-lg font-medium hover:bg-blue-700">Create Task</button>
+                    </form>
+                    <!-- SHOW TASKS -->
+                    <?php $filterTask = array_filter($tasks, fn($t) => $t['category_id'] == $_GET['cat']); ?>
+
+                    <?php if (empty($filterTask)): ?>
+                        <p class="text-gray-500">No tasks yet.</p>
+                        <?php else: ?>
+
+                        <div class="space-y-3">
+                        <?php foreach ($filterTask as $task): ?>
+                            <div class="p-4 rounded-xl border 
+                                <?= $task['status']==='completed' ? 'bg-green-100 border-green-300' : 'bg-yellow-100 border-yellow-300' ?> flex justify-between items-center">
+                            
+                                <div>
+                                    <p class="font-bold text-xs text-gray-900 <?= $task['status']==='completed' ? 'line-through' : '' ?>">
+                                        <?= htmlspecialchars($task['title']) ?>
+                                    </p>
+                                
+                                    <?php if ($task['description']): ?>
+                                        <p class="text-sm  text-gray-700 <?= $task['status']==='completed' ? 'line-through' : '' ?>">
+                                            <?= htmlspecialchars($task['description']) ?>
+                                        </p>
+                                    <?php endif; ?>
+                                </div>
+                    
+                                <div class="flex items-center space-x-3">
+                                        
+                                    <!-- status of the tasks -->
+                                    <form method="POST" action="/tasks/update?id=<?= $task['id'] ?>">
+
+                                        <input type="hidden" name="_method" value="PUT">
+                                        <input type="hidden" name="status" value="in progress" >
+                                        
+                                        <button type="submit"
+                                            class="px-3 py-1 text-sm font-bold rounded
+                                            <?= $task['status']==='in progress text-black' ?>">
+                                        <span class="px-1 py-1 text-lg  rounded-4xl hover:bg-amber-300">🟡</span>
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="POST" action="/tasks/update?id=<?= $task['id'] ?>">
+
+                                        <input type="hidden" name="_method" value="PUT">
+                                        <input type="hidden" name="status" value="completed" >
+                                        
+                                        <button type="submit"class="px-2 py-1 text-sm font-bold 
+                                            <?= $task['status']==='completed text-black' ?>">
+                                            <span class="px-1 py-1 text-lg hover:bg-green-300">✅</span>
+                                        </button>
+                                    </form>
+                                        
+                                    <!-- edit tasks  -->
+                                        <?php if ($task['status'] !== 'completed'): ?>
+                                            <a href="/dashboard?cat=<?= $_GET['cat'] ?>&edit=<?= $task['id'] ?>" class="text-lg         text-blue-600 hover:underline" title="Edit Task">✏️
+                                            </a>
+                                            <?php else: ?>
+                                            <span class="text-lg text-gray-400 cursor-not-allowed" title="Cannot edit a completed   task">✏️
+                                            </span>
+                                        <?php endif; ?>
+                                        
+                                    <!-- deleete tasks -->
+                                    <form method="POST" action="/tasks/delete?id=<?= $task['id'] ?>" class="inline">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="text-xl text-red-600 hover:underline">🗑️</button>
+                                    </form>
+                                </div>
+                            </div>
+                                <?php if (isset($_GET['edit']) && $_GET['edit'] == $task['id']): ?>
+                                    <div class="mt-3 p-4 bg-yellow-200 border rounded-lg">        
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Edit Task</h3>
+                                        <form method="POST" action="/tasks/update?id=<?= $task['id'] ?>">
+                                            <input type="hidden" name="_method" value="PUT">
+                                            <label class="block font-bold text-sm mb-1">Title</label>
+                                            <input type="text" name="title" value="<?= htmlspecialchars($task['title']) ?>" 
+                                            class="w-full p-2 bg-white  border rounded mb-3">
+                                            <label class="block text-sm font-bold mb-1 ">Description</label>
+                                            <textarea name="description" class="w-full p-2 bg-white border rounded mb-3"><?=htmlspecialchars($task['description']) ?></textarea>
+                                            <button class="w-full bg-blue-600 text-white p-2 rounded-lg">
+                                            Update Task
+                                            </button>
+                                        </form>
+                                        <a href="/dashboard?cat=<?= $_GET['cat'] ?>"
+                                           class="block text-center mt-3 text-gray-600 hover:underline">
+                                            Cancel
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </section>
+            <?php endif; ?>
+        </div>
+    </div>
+</body>
+</html>

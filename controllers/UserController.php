@@ -272,7 +272,4 @@ class UserController extends ApplicationController
         $this->render("user/dashboard", ["categories" => $categories, "tasks" => $tasks, "username" => $_SESSION["username"]]);
         
     }
-
-
-
 }
