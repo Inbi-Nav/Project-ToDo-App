@@ -57,7 +57,6 @@ class UserController extends ApplicationController
         return $this->json(["success" => true, "data" => $newUser]);
     }
 
-
     public function updateAction() {
 
         $id = $_GET['id'] ?? null;

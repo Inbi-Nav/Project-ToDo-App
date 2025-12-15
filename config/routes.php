@@ -28,7 +28,5 @@ return [
     '/login'    => 'user#login',
     '/dashboard' => 'user#dashboard',
     '/logout'   => 'user#logout',
-    
-
 ];
 ?>
